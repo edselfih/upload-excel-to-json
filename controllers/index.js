@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const User = require('../models/index')
 
 module.exports.uploadPage = (req, res) => {
     res.render('./index')
@@ -11,7 +12,7 @@ module.exports.upload = async (req, res) => {
     const sheet_name_list = workbook.SheetNames;
     // console.log(sheet_name_list); // getting as Sheet1
   
-    sheet_name_list.forEach(function (y) {  // untuk memanggil fungsi disetiap element di array y adalah worksheetnya
+    sheet_name_list.forEach(async function (y) {  // untuk memanggil fungsi disetiap element di array y adalah worksheetnya
         const worksheet = workbook.Sheets[y];
         //getting the complete sheet
         // console.log(worksheet);
@@ -19,7 +20,11 @@ module.exports.upload = async (req, res) => {
         let headers = {};
         const data = XLSX.utils.sheet_to_json(worksheet); // isinta array dan ada objeknya
         const directory = 'upload';
-
+        for (const i of data ) {
+            const bioData = new User(i)
+            await bioData.save()
+            console.log(bioData)
+        }
         // untuk menghapus semua file dalam folder upload
         fs.readdir(directory, (err, files) => { // fs tolong read file yang ada di direktori ini(upload)
             if (err) throw err; // kalau error throw
